@@ -3,6 +3,11 @@ A font rendering implementation based on https://github.com/shreyaspranav/stb-tr
 
 ![](example.png)
 
+# Differences with original repository:
+- Handles new line characters
+- No crash on unknown glyphs
+- Renders multiple fonts at once
+
 # Dependencies
 Everything is included:
 - GLFW
