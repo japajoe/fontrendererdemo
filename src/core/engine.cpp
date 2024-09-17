@@ -3,13 +3,19 @@
 #include "../rendering/font.h"
 #include <iostream>
 
-std::string demoText1 =
-R"(Font rendering is such a pain in the ass.
-That said, big thanks to https://github.com/shreyaspranav/stb-truetype-example)";
+std::string demoText1 = "OpenGL Font Rendering";
+
+std::string demoText2 = "This implementation is based on https://github.com/shreyaspranav/stb-truetype-example";
+
+std::string demoText3 =
+R"(Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
+Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.)";
 
 Engine::Engine() {
-    size_t width = 512;
-    size_t height = 512;
+    size_t width = 800;
+    size_t height = 600;
     application = Application(width, height, "OpenGL Font Rendering");
     screen.setWindowSize(width, height);
 }
@@ -35,14 +41,24 @@ void Engine::run() {
     };
 
     application.newFrame += [this] () {
-        glClearColor(0.1, 0.1, 0.1, 1.0);
+        auto convertColor = [] (float r, float g, float b) {
+            if(r > 1.0f)
+                r /= 255.0f;
+            if(g > 1.0f)
+                g /= 255.0f;
+            if(b > 1.0f)
+                b /= 255.0f;
+            return glm::vec4(r, g, b, 1.0f);
+        };
+
+        glm::vec4 bg = convertColor(37, 36, 34);
+        glClearColor(bg.r, bg.g, bg.b, bg.a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        fontRenderer.addText(&font1, demoText1, glm::vec2(5.0f, 5.0f), glm::vec4(0.90f, 0.58f, 0.09f, 1.0f), 18.0f);
-        fontRenderer.addText(&font2, "This uses a different font and color", glm::vec2(5.0f, 35.0f), glm::vec4(0.78, 0.08f, 0.90f, 1.0f), 22.0f);
-        fontRenderer.addText(&font3, "Noice", glm::vec2(5.0f, 55.0f), glm::vec4(0.21f, 0.94f, 0.21f, 1.0f), 64.0f);
+        fontRenderer.addText(&font3, demoText1, glm::vec2(5.0f, 0.0f), convertColor(124, 181, 24), 64.0f);
+        fontRenderer.addText(&font2, demoText2, glm::vec2(5.0f, 65.0f), convertColor(255, 178, 56), 22.0f);
+        fontRenderer.addText(&font1, demoText3, glm::vec2(5.0f, 85.0f), convertColor(128, 164, 237), 18.0f);
 
-        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         fontRenderer.newFrame();
     };
 

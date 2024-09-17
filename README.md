@@ -7,3 +7,7 @@ Everything is included:
 - Glad
 - GLM
 - stb_truetype
+
+# Example
+
+![](example.png)
