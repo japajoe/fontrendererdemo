@@ -15,7 +15,13 @@ Font::Font() {
 Font::Font(const std::string &filepath, uint32_t pixelSize) {
     this->pixelSize = pixelSize;
     texture = 0;
-    load(filepath);
+    loadFromFile(filepath);
+}
+
+Font::Font(const uint8_t *fontData, uint32_t pixelSize) {
+    this->pixelSize = pixelSize;
+    texture = 0;
+    loadFromMemory(fontData);
 }
 
 void Font::destroy() {
@@ -25,10 +31,10 @@ void Font::destroy() {
     }
 }
 
-bool Font::load(const std::string &filepath) {
+bool Font::loadFromFile(const std::string &filepath) {
     std::ifstream inputStream(filepath.c_str(), std::ios::binary | std::ios::ate);
     if (!inputStream) {
-        std::cerr << "Failed to open font file." << std::endl;
+        std::cerr << "Failed to open font file\n";
         return false;
     }
 
@@ -40,13 +46,27 @@ bool Font::load(const std::string &filepath) {
 
     inputStream.read((char*)fontDataBuf.data(), fontFileSize);
 
+    uint8_t *buffer = fontDataBuf.data();
+
+    return load(fontDataBuf.data());
+}
+
+bool Font::loadFromMemory(const uint8_t *fontData) {
+    if(!fontData) {
+        std::cerr << "Failed to read font data because it is null\n";
+        return false;
+    }
+    return load(fontData);
+}
+
+//bool Font::load(const std::string &filepath) {
+bool Font::load(const uint8_t *data) {
     stbtt_fontinfo fontInfo = {};
 
-    uint32_t fontCount = stbtt_GetNumberOfFonts(fontDataBuf.data());
-    std::cout << "Font File: " << filepath << " has " << fontCount << " fonts" << std::endl;
+    uint32_t fontCount = stbtt_GetNumberOfFonts(data);
 
-    if(!stbtt_InitFont(&fontInfo, fontDataBuf.data(), 0)) {
-        std::cerr << "stbtt_InitFont() Failed!" << std::endl;
+    if(!stbtt_InitFont(&fontInfo, data, 0)) {
+        std::cerr << "stbtt_InitFont() Failed!\n";
         return false;
     }
 
@@ -80,7 +100,7 @@ bool Font::load(const std::string &filepath) {
 
     stbtt_PackFontRange(
         &ctx,                                     // stbtt_pack_context
-        fontDataBuf.data(),                       // Font Atlas texture data
+        data,                                     // Font Atlas texture data
         0,                                        // Font Index                                 
         fontSize,                                 // Size of font in pixels. (Use STBTT_POINT_SIZE(fontSize) to use points) 
         codePointOfFirstChar,                     // Code point of the first charecter

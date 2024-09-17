@@ -22,6 +22,7 @@ class Font {
 public:
     Font();
     Font(const std::string &filepath, uint32_t pixelSize);
+    Font(const uint8_t *fontData, uint32_t pixelSize);
     inline uint32_t getPixelSize() const { return pixelSize; }
     inline uint32_t getTexture() const { return texture; }
     inline std::vector<PackedChar> &getCharacters() { return characters; }
@@ -36,7 +37,9 @@ private:
     float lineHeight;
     std::vector<PackedChar> characters;
     std::vector<AlignedQuad> quads;
-    bool load(const std::string &filepath);
+    bool loadFromFile(const std::string &filepath);
+    bool loadFromMemory(const uint8_t *fontData);
+    bool load(const uint8_t *data);
 };
 
 #endif
