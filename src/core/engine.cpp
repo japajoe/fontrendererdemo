@@ -23,21 +23,27 @@ void Engine::run() {
     application.initialize += [this] () {
         glEnable(GL_DEPTH_TEST);
         fontRenderer.initialize();
-        font = Font("../data/BarlowCondensed-Regular.ttf", 32);
+        font1 = Font("../data/BarlowCondensed-Regular.ttf", 64);
+        font2 = Font("../data/sui.ttf", 64);
+        font3 = Font("../data/Handjet-Regular.ttf", 64);
+
+        //Roboto-Regular
     };
 
     application.close += [this] () {
         fontRenderer.deinitialize();
-        font.destroy();
+        font1.destroy();
+        font2.destroy();
+        font3.destroy();
     };
 
     application.newFrame += [this] () {
         glClearColor(0.1, 0.1, 0.1, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        fontRenderer.addText(&font, demoText, glm::vec2(10.0f, 20.0f), glm::vec4(0.9f, 0.9f, 0.9f, 1.0f), 22.0f);
-        fontRenderer.addText(&font, "This works", glm::vec2(10.0f, 60.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), 22.0f);
-        fontRenderer.addText(&font, "Noice", glm::vec2(10.0f, 90.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 22.0f);
+        fontRenderer.addText(&font2, demoText, glm::vec2(10.0f, 22.0f), glm::vec4(0.9f, 0.9f, 0.9f, 1.0f), 32.0f);
+        fontRenderer.addText(&font1, "This works", glm::vec2(10.0f, 72.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), 22.0f);
+        fontRenderer.addText(&font3, "Noice", glm::vec2(10.0f, 122.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 64.0f);
         fontRenderer.newFrame();
     };
 

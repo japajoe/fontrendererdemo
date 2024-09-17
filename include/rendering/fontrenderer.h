@@ -17,6 +17,12 @@ struct FontRendererBuffer {
     std::vector<Vertex2D> vertices;
 };
 
+enum FontShaderUniform {
+    FontShaderUniform_Projection,
+    FontShaderUniform_Texture,
+    FontShaderUniform_COUNT
+};
+
 class FontRenderer {
 public:
     FontRenderer();
@@ -30,6 +36,7 @@ private:
     uint32_t screenHeight;
     uint32_t screenWidth;
     glm::mat4 projectionMatrix;
+    int32_t uniforms[FontShaderUniform_COUNT];
     FontRendererBuffer *getBuffer(Font *font);
     FontRendererBuffer *createBuffer(Font *font);
     void createProjectionMatrix();

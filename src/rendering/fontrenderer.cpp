@@ -35,20 +35,25 @@ void FontRenderer::newFrame() {
 
     shader.use();
 
+    GLint oldSrcBlend, oldDstBlend, oldBlendEquation;
+
+    glGetIntegerv(GL_BLEND_SRC, &oldSrcBlend);
+    glGetIntegerv(GL_BLEND_DST, &oldDstBlend);
+    glGetIntegerv(GL_BLEND_EQUATION_RGB, &oldBlendEquation);
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBlendEquation(GL_FUNC_ADD);
 
     for(size_t i = 0; i < buffers.size(); i++) {
-        if(buffers[i].vertexIndex == 0) {
+        if(buffers[i].vertexIndex == 0)
             continue;
-        }
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, buffers[i].font->getTexture());
 
-        shader.setMat4("uProjection", false, glm::value_ptr(projectionMatrix));
-        shader.setInt("uTexture", 0);
+        shader.setMat4(uniforms[FontShaderUniform_Projection], false, glm::value_ptr(projectionMatrix));
+        shader.setInt(uniforms[FontShaderUniform_Texture], 0);
 
         glBindBuffer(GL_ARRAY_BUFFER, buffers[i].VBO);
         glBufferSubData(GL_ARRAY_BUFFER, 0, buffers[i].vertexIndex * sizeof(Vertex2D), buffers[i].vertices.data());
@@ -61,6 +66,8 @@ void FontRenderer::newFrame() {
         buffers[i].vertexIndex = 0;
     }
 
+    glBlendFunc(oldSrcBlend, oldDstBlend);
+    glBlendEquation(oldBlendEquation);
     glDisable(GL_BLEND);
 }
 
@@ -229,8 +236,7 @@ uniform mat4 uProjection;
 out vec2 oTexCoords;
 out vec4 oColor;
 
-void main()
-{
+void main() {
     gl_Position = uProjection * vec4(aPosition.xy, 0.0, 1.0);
     oTexCoords = aTexCoordinate.xy;
     oColor = aColor;
@@ -244,14 +250,19 @@ in vec2 oTexCoords;
 in vec4 oColor;
 out vec4 color;
 
-void main()
-{
+vec4 GammaCorrection(vec4 color) {
+    return vec4(pow(color.rgb, vec3(1.0/2.2)), 1.0);
+}
+
+void main() {
     vec4 sampled = texture(uTexture, oTexCoords);
 
     if(sampled.r == 0.0)
         discard;
 
-    color = vec4(oColor.rgb, 1.0) * sampled.r;
+    vec4 outColor = vec4(oColor.rgb, 1.0) * sampled.r;
+    
+    color = GammaCorrection(outColor);
 
     // Looks better under some circumstances but probably works best with SDF fonts
     // float d = texture(uTexture, oTexCoords).r;
@@ -261,4 +272,7 @@ void main()
 })";
 
     shader = Shader(vertex, fragment);
+
+    uniforms[FontShaderUniform_Projection] = glGetUniformLocation(shader.getId(), "uProjection");
+    uniforms[FontShaderUniform_Texture] = glGetUniformLocation(shader.getId(), "uTexture");
 }

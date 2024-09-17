@@ -14,7 +14,9 @@ private:
     Application application;
     Screen screen;
     FontRenderer fontRenderer;
-    Font font;
+    Font font1;
+    Font font2;
+    Font font3;
 };
 
 #endif
