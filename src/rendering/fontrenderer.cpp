@@ -91,8 +91,6 @@ void FontRenderer::addText(Font *font, const std::string &text, const glm::vec2 
         return;
     if(text.size() == 0)
         return;
-    if(size == 0)
-        return;
 
     //Gets a buffer that already is using this font, or creates a new one if it wasn't found
     FontRendererBuffer *buffer = getBuffer(font);
@@ -119,6 +117,8 @@ void FontRenderer::addText(Font *font, const std::string &text, const glm::vec2 
     auto &alignedQuads = font->getQuads();
 
     glm::vec2 pos = position;
+    
+    //Compute the max height of the first line in order to position the text properly
     pos.y += font->computeLineHeight(text) * size;
 
     //Store the original X position so it can be used when adding a new line
@@ -138,8 +138,8 @@ void FontRenderer::addText(Font *font, const std::string &text, const glm::vec2 
             continue;
 
         // Retrieve the data that is used to render a glyph of charecter 'ch'
-        auto packedChar = &packedChars[ch - codePointOfFirstChar]; 
-        auto alignedQuad = &alignedQuads[ch - codePointOfFirstChar];
+        auto packedChar = &packedChars[glyphIndex]; 
+        auto alignedQuad = &alignedQuads[glyphIndex];
 
         // The units of the fields of the above structs are in pixels, 
         // convert them to a unit of what we want be multilplying to pixelScale  
