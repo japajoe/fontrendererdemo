@@ -4,9 +4,9 @@
 #include <iostream>
 
 Application::Application() {
-    this->width = 256;
-    this->height = 256;
-    this->title = "FontTester";
+    this->width = 512;
+    this->height = 512;
+    this->title = "OpenGL Font Rendering";
     window = nullptr;    
 }
 

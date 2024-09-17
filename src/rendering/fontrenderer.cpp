@@ -31,25 +31,29 @@ void FontRenderer::newFrame() {
     if(buffers.size() == 0)
         return;
 
-    createProjectionMatrix();
-
-    shader.use();
-
     GLint oldSrcBlend, oldDstBlend, oldBlendEquation;
+    GLboolean oldIsBlendEnabled = glIsEnabled(GL_BLEND);
+    GLboolean oldIsDepthTestEnabled = glIsEnabled(GL_DEPTH_TEST);
 
     glGetIntegerv(GL_BLEND_SRC, &oldSrcBlend);
     glGetIntegerv(GL_BLEND_DST, &oldDstBlend);
     glGetIntegerv(GL_BLEND_EQUATION_RGB, &oldBlendEquation);
 
     glEnable(GL_BLEND);
+    glDisable(GL_DEPTH_TEST);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBlendEquation(GL_FUNC_ADD);
+
+    createProjectionMatrix();
+    
+    shader.use();
+
+    glActiveTexture(GL_TEXTURE0);
 
     for(size_t i = 0; i < buffers.size(); i++) {
         if(buffers[i].vertexIndex == 0)
             continue;
-
-        glActiveTexture(GL_TEXTURE0);
+        
         glBindTexture(GL_TEXTURE_2D, buffers[i].font->getTexture());
 
         shader.setMat4(uniforms[FontShaderUniform_Projection], false, glm::value_ptr(projectionMatrix));
@@ -63,12 +67,23 @@ void FontRenderer::newFrame() {
         glDrawArrays(GL_TRIANGLES, 0, buffers[i].vertexIndex);
         glBindVertexArray(0);
 
+        glBindTexture(GL_TEXTURE_2D, 0);
+
         buffers[i].vertexIndex = 0;
     }
 
     glBlendFunc(oldSrcBlend, oldDstBlend);
     glBlendEquation(oldBlendEquation);
-    glDisable(GL_BLEND);
+    
+    if (oldIsBlendEnabled) 
+        glEnable(GL_BLEND); 
+    else 
+        glDisable(GL_BLEND);
+
+    if(oldIsDepthTestEnabled)
+        glEnable(GL_DEPTH_TEST);
+    else
+        glDisable(GL_DEPTH_TEST);
 }
 
 void FontRenderer::addText(Font *font, const std::string &text, const glm::vec2 &position, const glm::vec4 &color, float size) {

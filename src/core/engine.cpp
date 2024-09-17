@@ -21,13 +21,10 @@ void Engine::run() {
     }
     
     application.initialize += [this] () {
-        glEnable(GL_DEPTH_TEST);
         fontRenderer.initialize();
         font1 = Font("../data/BarlowCondensed-Regular.ttf", 64);
         font2 = Font("../data/sui.ttf", 64);
         font3 = Font("../data/Handjet-Regular.ttf", 64);
-
-        //Roboto-Regular
     };
 
     application.close += [this] () {
@@ -44,6 +41,7 @@ void Engine::run() {
         fontRenderer.addText(&font2, demoText, glm::vec2(10.0f, 22.0f), glm::vec4(0.9f, 0.9f, 0.9f, 1.0f), 32.0f);
         fontRenderer.addText(&font1, "This works", glm::vec2(10.0f, 72.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), 22.0f);
         fontRenderer.addText(&font3, "Noice", glm::vec2(10.0f, 122.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 64.0f);
+        
         fontRenderer.newFrame();
     };
 
