@@ -28,6 +28,7 @@ void Engine::run() {
 
     application.close += [this] () {
         fontRenderer.deinitialize();
+        font.destroy();
     };
 
     application.newFrame += [this] () {
