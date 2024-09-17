@@ -7,6 +7,7 @@ A font rendering implementation based on https://github.com/shreyaspranav/stb-tr
 - Handles new line characters
 - No crash on unknown glyphs
 - Renders multiple fonts at once
+- Well defined abstraction, easy to integrate into existing projects
 
 # Dependencies
 Everything is included:
