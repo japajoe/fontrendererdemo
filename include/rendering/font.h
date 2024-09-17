@@ -23,13 +23,15 @@ public:
     Font();
     Font(const std::string &filepath, uint32_t pixelSize);
     Font(const uint8_t *fontData, uint32_t pixelSize);
+    void destroy();
+    float computeLineHeight(const std::string &text);
     inline uint32_t getPixelSize() const { return pixelSize; }
     inline uint32_t getTexture() const { return texture; }
     inline std::vector<PackedChar> &getCharacters() { return characters; }
     inline std::vector<AlignedQuad> &getQuads() { return quads; }
     inline uint32_t getCodePointOfFirstChar() { return codePointOfFirstChar; }
     inline float getLineHeight() const { return lineHeight; }
-    void destroy();
+    inline size_t getNumberOfCharacters() const { return characters.size(); }
 private:
     uint32_t pixelSize;
     uint32_t texture;

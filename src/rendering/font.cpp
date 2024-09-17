@@ -31,6 +31,33 @@ void Font::destroy() {
     }
 }
 
+float Font::computeLineHeight(const std::string &text) {
+    if(text.size() == 0)
+        return 0;
+    
+    float height = lineHeight;
+
+    for(auto c : text) {
+        if(c == '\n')
+            return height;
+        
+        int index = c - codePointOfFirstChar;
+        
+        if(index >= characters.size())
+            continue;
+        
+        auto glyph = &characters[index];
+
+        float glyphHeight = (glyph->y1 - glyph->y0);
+        
+        if (glyphHeight > height) {
+            height = glyphHeight;
+        }
+    }
+
+    return height;
+}
+
 bool Font::loadFromFile(const std::string &filepath) {
     std::ifstream inputStream(filepath.c_str(), std::ios::binary | std::ios::ate);
     if (!inputStream) {

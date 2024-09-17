@@ -94,28 +94,32 @@ void FontRenderer::addText(Font *font, const std::string &text, const glm::vec2 
     if(size == 0)
         return;
 
+    //Gets a buffer that already is using this font, or creates a new one if it wasn't found
     FontRendererBuffer *buffer = getBuffer(font);
+    
     if(!buffer)
         return;
 
-    //Check if buffer has enough capacity, if not, create a new one
-    if(buffer->vertexIndex >= FONT_BUFFER_MAX_VERTICES) {
+    //Check if the buffer has enough capacity for 6 new vertices, if not, create a new one
+    if((buffer->vertexIndex + 6) >= FONT_BUFFER_MAX_VERTICES) {
         buffer = createBuffer(font);
         if(!buffer)
             return;
     }
 
-    float fontScale = size / font->getPixelSize();
-    size = fontScale;
+    if(size <= 0.0f)
+        size = 1.0f;
+
+    size = size / font->getPixelSize();
 
     int order[6] = { 0, 1, 2, 0, 2, 3 };
-    float pixelScale = 1.0f;
     const uint32_t codePointOfFirstChar = buffer->font->getCodePointOfFirstChar();
 
     auto &packedChars = font->getCharacters();
     auto &alignedQuads = font->getQuads();
 
     glm::vec2 pos = position;
+    pos.y += font->computeLineHeight(text) * size;
 
     //Store the original X position so it can be used when adding a new line
     float posX = position.x;
@@ -123,24 +127,30 @@ void FontRenderer::addText(Font *font, const std::string &text, const glm::vec2 
     for(char ch : text) {
         if(ch == '\n') {
             pos.x = posX;
-            pos.y += font->getLineHeight() * pixelScale * size;
+            pos.y += font->getLineHeight() * size;
             continue;
         }
 
-        // Retrive the data that is used to render a glyph of charecter 'ch'
+        int glyphIndex = (ch - codePointOfFirstChar);
+
+        //Skip unknown glyphs
+        if(glyphIndex < 0 || glyphIndex >= font->getNumberOfCharacters())
+            continue;
+
+        // Retrieve the data that is used to render a glyph of charecter 'ch'
         auto packedChar = &packedChars[ch - codePointOfFirstChar]; 
         auto alignedQuad = &alignedQuads[ch - codePointOfFirstChar];
 
         // The units of the fields of the above structs are in pixels, 
         // convert them to a unit of what we want be multilplying to pixelScale  
         glm::vec2 glyphSize = {
-            (packedChar->x1 - packedChar->x0) * pixelScale * size,
-            (packedChar->y1 - packedChar->y0) * pixelScale * size
+            (packedChar->x1 - packedChar->x0) * size,
+            (packedChar->y1 - packedChar->y0) * size
         };
 
         glm::vec2 glyphBoundingBoxBottomLeft = {
-            pos.x + (packedChar->xoff * pixelScale * size),
-            pos.y + (packedChar->yoff + packedChar->y1 - packedChar->y0) * pixelScale * size
+            pos.x + (packedChar->xoff * size),
+            pos.y + (packedChar->yoff + packedChar->y1 - packedChar->y0) * size
         };
 
         // The order of vertices of a quad goes top-right, top-left, bottom-left, bottom-right
@@ -171,7 +181,7 @@ void FontRenderer::addText(Font *font, const std::string &text, const glm::vec2 
         buffer->vertexIndex += 6;
 
         // Update the position to render the next glyph specified by packedChar->xadvance.
-        pos.x += packedChar->xadvance * pixelScale * size;
+        pos.x += packedChar->xadvance * size;
     }
 }
 
