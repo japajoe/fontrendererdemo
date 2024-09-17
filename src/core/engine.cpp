@@ -36,7 +36,6 @@ void Engine::run() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         fontRenderer.addText(&font, demoText, glm::vec2(10.0f, 20.0f), glm::vec4(0.9f, 0.9f, 0.9f, 1.0f), 22.0f);
-
         fontRenderer.addText(&font, "This works", glm::vec2(10.0f, 60.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), 22.0f);
         fontRenderer.addText(&font, "Noice", glm::vec2(10.0f, 90.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 22.0f);
         fontRenderer.newFrame();

@@ -28,14 +28,12 @@ void FontRenderer::deinitialize() {
 }
 
 void FontRenderer::newFrame() {
-    createProjectionMatrix();
-
     if(buffers.size() == 0)
         return;
 
-    shader.use();
+    createProjectionMatrix();
 
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    shader.use();
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -43,7 +41,6 @@ void FontRenderer::newFrame() {
 
     for(size_t i = 0; i < buffers.size(); i++) {
         if(buffers[i].vertexIndex == 0) {
-            std::cout << "Vertex index: " << buffers[i].vertexIndex << '\n';
             continue;
         }
 
@@ -139,7 +136,6 @@ void FontRenderer::addText(Font *font, const std::string &text, const glm::vec2 
             { alignedQuad->s1, alignedQuad->t1 },
         };
 
-
         // We need to fill the vertex buffer by 6 vertices to render a quad as we are rendering a quad as 2 triangles
         // The order used is in the 'order' array
         // order = [0, 1, 2, 0, 2, 3] is meant to represent 2 triangles: 
@@ -222,7 +218,7 @@ void FontRenderer::createProjectionMatrix() {
 }
 
 void FontRenderer::createShader() {
-        std::string vertex =
+    std::string vertex =
 R"(#version 330 core
 layout (location = 0) in vec2 aPosition;
 layout (location = 1) in vec2 aTexCoordinate;
@@ -240,7 +236,7 @@ void main()
     oColor = aColor;
 })";
 
-        std::string fragment =
+    std::string fragment =
 R"(#version 330 core
 uniform sampler2D uTexture;
 
