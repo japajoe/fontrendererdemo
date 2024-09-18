@@ -288,6 +288,7 @@ void main() {
     vec4 outColor = vec4(oColor.rgb, 1.0) * sampled.r;
     
     color = GammaCorrection(outColor);
+    color.a = oColor.a;
 
     // Looks better under some circumstances but probably works best with SDF fonts
     // float d = texture(uTexture, oTexCoords).r;

@@ -12,6 +12,11 @@ struct Vertex2D {
         this->position = position;
         this->uv = uv;
     }
+    Vertex2D(const glm::vec2 &position, const glm::vec2 &uv, const glm::vec4 &color) {
+        this->position = position;
+        this->uv = uv;
+        this->color = color;
+    }
 };
 
 #endif

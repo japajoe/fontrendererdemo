@@ -28,6 +28,7 @@ void Engine::run() {
     
     application.initialize += [this] () {
         fontRenderer.initialize();
+        shapeRenderer.initialize();
         font1 = Font("../data/BarlowCondensed-Regular.ttf", 64);
         font2 = Font("../data/sui.ttf", 64);
         font3 = Font("../data/Handjet-Regular.ttf", 64);
@@ -35,31 +36,40 @@ void Engine::run() {
 
     application.close += [this] () {
         fontRenderer.deinitialize();
+        shapeRenderer.deinitialize();
         font1.destroy();
         font2.destroy();
         font3.destroy();
     };
 
-    application.newFrame += [this] () {
-        auto convertColor = [] (float r, float g, float b) {
-            if(r > 1.0f)
-                r /= 255.0f;
-            if(g > 1.0f)
-                g /= 255.0f;
-            if(b > 1.0f)
-                b /= 255.0f;
-            return glm::vec4(r, g, b, 1.0f);
+    uint64_t counter = 0;
+
+    application.newFrame += [&] () {
+        auto getColor = [] (int r, int g, int b, int a) {
+            glm::vec4 col;
+            col.x = r > 0 ? ((float)r / 255) : 0;
+            col.y = g > 0 ? ((float)g / 255) : 0;
+            col.z = b > 0 ? ((float)b / 255) : 0;
+            col.w = a > 0 ? ((float)a / 255) : 0;
+            return col;
         };
 
-        glm::vec4 bg = convertColor(37, 36, 34);
+        glm::vec4 bg = getColor(37, 36, 34, 255);
         glClearColor(bg.r, bg.g, bg.b, bg.a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        fontRenderer.addText(&font3, demoText1, glm::vec2(5.0f, 0.0f), convertColor(124, 181, 24), 64.0f);
-        fontRenderer.addText(&font2, demoText2, glm::vec2(5.0f, 65.0f), convertColor(255, 178, 56), 22.0f);
-        fontRenderer.addText(&font1, demoText3, glm::vec2(5.0f, 85.0f), convertColor(128, 164, 237), 18.0f);
+        float alpha = (sinf(counter * 0.03) + 1.0f) * 0.5f;
 
+        fontRenderer.addText(&font3, demoText1, glm::vec2(5.0f, 0.0f), getColor(124, 181, 24, alpha * 255), 64.0f);
+        fontRenderer.addText(&font2, demoText2, glm::vec2(5.0f, 65.0f), getColor(255, 178, 56, 255), 22.0f);
+        fontRenderer.addText(&font1, demoText3, glm::vec2(5.0f, 85.0f), getColor(128, 164, 237, 255), 18.0f);
+
+        shapeRenderer.addRectangle(glm::vec2(5, 5), glm::vec2(430, 60), getColor(158, 158, 158, alpha * 64));
+
+        shapeRenderer.newFrame();
         fontRenderer.newFrame();
+
+        counter++;
     };
 
     application.resize += [this] (int32_t width, int32_t height) {
