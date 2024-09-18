@@ -31,7 +31,6 @@ public:
     void initialize();
     void deinitialize();
     void addRectangle(const glm::vec2 &position, const glm::vec2 &size, const glm::vec4 &color);
-    void addCircle(const glm::vec2 &position, float radius, const glm::vec4 &color);
     void newFrame();
 private:
     std::vector<ShapeRendererBuffer> buffers;

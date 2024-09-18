@@ -25,6 +25,7 @@ void FontRenderer::deinitialize() {
     }
 
     buffers.clear();
+    shader.destroy();
 }
 
 void FontRenderer::newFrame() {
@@ -89,7 +90,7 @@ void FontRenderer::newFrame() {
 void FontRenderer::addText(Font *font, const std::string &text, const glm::vec2 &position, const glm::vec4 &color, float size) {
     if(!font)
         return;
-    if(text.size() == 0)
+    if(text.size() == 0 || text.size() > FONT_BUFFER_MAX_VERTICES)
         return;
 
     //Gets a buffer that already is using this font, or creates a new one if it wasn't found
@@ -98,8 +99,8 @@ void FontRenderer::addText(Font *font, const std::string &text, const glm::vec2 
     if(!buffer)
         return;
 
-    //Check if the buffer has enough capacity for 6 new vertices, if not, create a new one
-    if((buffer->vertexIndex + 6) >= FONT_BUFFER_MAX_VERTICES) {
+    //Check if the buffer has enough capacity for the new vertices, if not, create a new one
+    if((buffer->vertexIndex + (text.size() * 6)) >= FONT_BUFFER_MAX_VERTICES) {
         buffer = createBuffer(font);
         if(!buffer)
             return;

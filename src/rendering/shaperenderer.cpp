@@ -25,6 +25,7 @@ void ShapeRenderer::deinitialize() {
     }
 
     buffers.clear();
+    shader.destroy();
 }
 
 void ShapeRenderer::addRectangle(const glm::vec2 &position, const glm::vec2 &size, const glm::vec4 &color) {
@@ -51,10 +52,6 @@ void ShapeRenderer::addRectangle(const glm::vec2 &position, const glm::vec2 &siz
     }
     
     addVertices(vertices, 6, ShapeType::Rectangle);
-}
-
-void ShapeRenderer::addCircle(const glm::vec2 &position, float radius, const glm::vec4 &color) {
-
 }
 
 void ShapeRenderer::newFrame() {
